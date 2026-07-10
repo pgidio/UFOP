@@ -1,0 +1,13 @@
+1. salvar_tudo_robo.py
+Este programa funciona como uma cópia de segurança (backup). Ele: Conecta ao robô.
+Interrompe temporariamente o programa em execução. Pede ao robô a lista de
+arquivos. Lê o conteúdo de cada arquivo. Salva uma cópia desses arquivos em uma
+pasta do computador. Não altera o robô. Analogia: Imagine um pendrive. Em vez de
+editar os arquivos, você apenas copia tudo para seu computador caso algo dê errado
+depois.
+2. remover_main_critico_nao_mecha.py
+Este programa é uma ferramenta de manutenção. Ele: Conecta ao robô. Interrompe o
+programa em execução. Apaga o arquivo main.py. Reinicia o robô. O arquivo main.py é
+normalmente o programa que inicia automaticamente quando o robô liga. Sem ele, o
+robô deixa de executar seu comportamento principal até que um novo arquivo seja
+enviado.
