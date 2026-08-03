@@ -1,0 +1,126 @@
+import bpy
+import socket
+import math
+import json
+import threading
+
+HOST = '127.0.0.1'
+PORT = 65432
+
+ANGLES = {
+    'BASE': 0,
+    'J1': 0,
+    'J2': 0,
+    'J3': 0,
+    'J4': 0,
+    'J5': 0
+}
+
+armature = None
+
+def get_bones():
+    global armature
+    if not armature:
+        armature = bpy.data.objects.get("Armature")
+    if not armature:
+        return None
+    
+    return {
+        'base': armature.pose.bones.get("Bone.001"),
+        'j1': armature.pose.bones.get("Bone.003"),
+        'j2': armature.pose.bones.get("Bone.004"),
+        'j3': armature.pose.bones.get("Bone.005"),
+        'j4': armature.pose.bones.get("Bone.006"),
+        'j5': armature.pose.bones.get("Bone.007")
+    }
+
+def update_robot():
+    bones = get_bones()
+    if not bones:
+        return False
+    
+    for bone in bones.values():
+        if bone:
+            bone.rotation_mode = 'XYZ'
+    
+    if bones['base']:
+        bones['base'].rotation_euler.y = math.radians(ANGLES['BASE'])
+    if bones['j1']:
+        bones['j1'].rotation_euler.z = math.radians(ANGLES['J1'] - 90)
+    if bones['j2']:
+        bones['j2'].rotation_euler.z = math.radians(ANGLES['J2'])
+    if bones['j3']:
+        bones['j3'].rotation_euler.z = math.radians(ANGLES['J3'])
+    if bones['j4']:
+        bones['j4'].rotation_euler.y = math.radians(ANGLES['J4'])
+    if bones['j5']:
+        bones['j5'].rotation_euler.z = math.radians(ANGLES['J5'])
+    
+    bpy.context.view_layer.update()
+    return True
+
+def handle_client(conn, addr):
+    try:
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
+            
+            try:
+                cmd = json.loads(data.decode('utf-8'))
+                
+                if cmd['type'] == 'set_angle':
+                    joint = cmd['joint']
+                    if joint in ANGLES:
+                        ANGLES[joint] = float(cmd['value'])
+                        update_robot()
+                    conn.sendall(json.dumps({'status': 'success'}).encode('utf-8'))
+                
+                elif cmd['type'] == 'set_angles':
+                    for joint, value in cmd['angles'].items():
+                        if joint in ANGLES:
+                            ANGLES[joint] = float(value)
+                    update_robot()
+                    conn.sendall(json.dumps({'status': 'success'}).encode('utf-8'))
+                
+                elif cmd['type'] == 'get_angles':
+                    conn.sendall(json.dumps({'status': 'success', 'angles': ANGLES}).encode('utf-8'))
+                
+                elif cmd['type'] == 'ping':
+                    conn.sendall(json.dumps({'status': 'success'}).encode('utf-8'))
+                
+                else:
+                    conn.sendall(json.dumps({'status': 'error'}).encode('utf-8'))
+            
+            except:
+                conn.sendall(json.dumps({'status': 'error'}).encode('utf-8'))
+    
+    except:
+        pass
+    finally:
+        conn.close()
+
+def start_server():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT))
+            s.listen(1)
+            
+            print(f"Servidor rodando em {HOST}:{PORT}")
+            
+            while True:
+                conn, addr = s.accept()
+                thread = threading.Thread(target=handle_client, args=(conn, addr))
+                thread.daemon = True
+                thread.start()
+    except:
+        pass
+
+if get_bones():
+    update_robot()
+    server_thread = threading.Thread(target=start_server, daemon=True)
+    server_thread.start()
+    print("Servidor iniciado!")
+else:
+    print("ERRO: Armature não encontrada!")

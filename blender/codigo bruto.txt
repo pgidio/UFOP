@@ -1,0 +1,30 @@
+import bpy         # biblioteca do blender
+import math        # biblioteca para calculos matematicos
+
+BASE = 0           # angulo da base em graus
+J1   = 90          # angulo da junta 1 em graus
+J2   = 0         # angulo da junta 2 em graus
+J3   = 0        # angulo da junta 3 em graus
+J4   = 0          # angulo da junta 4 em graus
+
+armature = bpy.data.objects.get("Armature")  # pega o objeto armature da cena
+
+bone_base = armature.pose.bones.get("Bone.001")       # pega o bone da base
+bone_j1   = armature.pose.bones.get("Bone.003")   # pega o bone da junta 1
+bone_j2   = armature.pose.bones.get("Bone.004")   # pega o bone da junta 2
+bone_j3   = armature.pose.bones.get("Bone.005")   # pega o bone da junta 3
+bone_j4   = armature.pose.bones.get("Bone.006")   # pega o bone da junta 4
+
+bone_base.rotation_mode = 'XYZ'   # define modo de rotacao da base
+bone_j1.rotation_mode   = 'XYZ'   # define modo de rotacao da junta 1
+bone_j2.rotation_mode   = 'XYZ'   # define modo de rotacao da junta 2
+bone_j3.rotation_mode   = 'XYZ'   # define modo de rotacao da junta 3
+bone_j4.rotation_mode   = 'XYZ'   # define modo de rotacao da junta 4
+
+bone_base.rotation_euler.y = math.radians(BASE)
+bone_j1.rotation_euler.z   = math.radians(J1 - 90)
+bone_j2.rotation_euler.z   = math.radians(J2 )
+bone_j3.rotation_euler.z   = math.radians(J3 )
+bone_j4.rotation_euler.y   = math.radians(J4 )
+
+bpy.context.view_layer.update()   # atualiza a cena no blender
