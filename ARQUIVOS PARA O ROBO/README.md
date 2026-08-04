@@ -140,13 +140,3 @@ python remover_main_critico_nao_mecha.py
 > Use apenas se tiver certeza do que está fazendo — faça sempre um backup com `salvar_tudo_robo.py` antes.
 
 ---
-
-## 📄 Licença
-
-_Adicione aqui a licença do projeto (ex.: MIT, GPL, etc.), caso deseje disponibilizar publicamente no GitHub._
-
----
-
-## 🙋 Autor
-
-_Adicione aqui seu nome/usuário do GitHub e informações de contato, se desejar._
