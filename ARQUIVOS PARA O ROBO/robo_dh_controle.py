@@ -1,45 +1,4 @@
-"""
-Cinemática Direta · Denavit-Hartenberg — Painel de Controle do Manipulador
-============================================================================
-Versão aprimorada do painel original. Principais melhorias em relação à
-versão anterior:
 
-  ARQUITETURA / QUALIDADE DE CÓDIGO
-  - Estado global (variáveis soltas no módulo) substituído por uma classe
-    `RobotArmApp`, o que evita colisões de nome e facilita manutenção/testes.
-  - `except:` genéricos substituídos por exceções específicas
-    (serial.SerialException, OSError, socket.timeout, json.JSONDecodeError,
-    ValueError), sempre registradas no log em vez de falhar silenciosamente.
-  - Comunicação serial e com o Blender agora rodam em threads separadas
-    (com fila thread-safe `queue.Queue`), então a interface NUNCA congela
-    durante `time.sleep(2)` de conexão ou timeouts de socket.
-  - Lista de juntas com sinal invertido (antes só o índice 2 "Cotovelo"
-    estava fixo no código) virou `config.juntas_invertidas`, configurável.
-  - Validação de campos da tabela DH agora sinaliza visualmente (borda
-    vermelha) o campo inválido em vez de engolir o erro com `pass`.
-  - Configuração do robô pode ser salva/carregada em JSON (extensível para
-    outros manipuladores, não só o "Manipulador Genérico" fixo).
-
-  INTERFACE / EXPERIÊNCIA
-  - Cabeçalho com gradiente animado e indicador de conexão pulsante.
-  - Visualizador 2D AO VIVO do braço (vista lateral + vista de topo),
-    desenhado a partir da cinemática direta real, atualizado a cada
-    movimento de slider — ótimo para conferir a pose antes de mover o
-    robô de verdade.
-  - Zona proibida de segurança agora é desenhada visualmente na vista
-    de topo, não só bloqueada por mensagem de erro.
-  - Aba "Poses Salvas": salvar, carregar, excluir, exportar/importar
-    (JSON) e reproduzir sequências de poses com animação suave.
-  - Aba "Log": console com histórico de comandos enviados e eventos,
-    com timestamp e níveis (info/aviso/erro).
-  - Tooltips explicativos nos principais controles.
-  - Barra de menu (Arquivo) e barra de status com relógio.
-  - Movimento animado: os sliders interpolam suavemente até a pose alvo
-    durante o tempo configurado, dando feedback visual do movimento.
-
-Cores do robô mantidas: Azul Metalizado, Preto Fosco, Prata, Branco,
-Amarelo, Vermelho.
-"""
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
